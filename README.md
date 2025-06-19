@@ -111,3 +111,22 @@ flowchart LR
 | **Class Weights** | Balanced |
 | **Best Model Metric** | `eval_f1` |
 
+## Complete Experimental Results
+
+### Comprehensive Model Comparison
+
+| Base Model | Frozen Layers/Full Layers | 5-fold Cross Validation Average F1 Score | Test Set F1 Score (Best Individual) | Test Set F1 Score (Ensemble - Soft Voting) |
+|------------|---------------------------|-------------------------------------------|-------------------------------------|---------------------------------------------|
+| **BioBERT-base** | **8/12** | **0.8671** | **0.8340** | **0.8261** |
+| BioBERT-base | 0/12 | 0.8647 | 0.8235 | 0.8053 |
+| BioBERT-large | 20/24 | 0.8496 | 0.8224 | 0.8081 |
+| BioBERT-large | 12/24 | 0.8652 | 0.8330 | **0.8319** |
+| BioBERT-large | 0/24 | 0.8489 | 0.8176 | 0.8043 |
+
+### Key Findings
+- **Best Configuration**: BioBERT-Base with 8/12 layers frozen (F1: 0.8671)
+- **Layer Freezing**: Moderate freezing outperforms full fine-tuning
+- **Model Efficiency**: Base model achieves comparable performance to Large model with 2-3x faster training
+- **Best Ensemble**: BioBERT-Large 12/24 frozen layers (F1: 0.8319)
+
+
