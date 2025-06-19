@@ -65,12 +65,12 @@ def main():
     
     # Load model and tokenizer
     print("Loading model...")
-    model_name = "dmis-lab/biobert-large-cased-v1.1"
+    model_name = "dmis-lab/biobert-base-cased-v1.1"
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     
     # Try to find the best model
     import glob
-    model_path = "./results_fold1_f1_0.8530/checkpoint-116"
+    model_path = "./biobert_base_5_fold_result/result1_0.8671_freeze8/results_fold4_f1_0.8502/checkpoint-261"
     print(f"Using model: {model_path}")
     
     try:

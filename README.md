@@ -7,7 +7,7 @@ This project implements a BioBERT text classification system for biomedical lite
 Based on extensive experiments, the optimal configuration achieved **F1 Score: 0.8671** with:
 - **Model**: BioBERT-Base (`dmis-lab/biobert-base-cased-v1.1`)
 - **Strategy**: Freeze first 8 layers, train last 4 layers + classifier
-- **Best Individual Model**: Fold 4 (F1: 0.8502)
+- **Best Individual Model**: Fold 4 (F1: 0.8340)
 
 ## Quick Start
 

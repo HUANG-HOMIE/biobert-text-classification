@@ -203,21 +203,21 @@ for fold, (train_idx, val_idx) in enumerate(kf.split(texts), 1):
     
     training_args = TrainingArguments(
         output_dir=output_dir,
-        per_device_train_batch_size=8,   # 降低batch size以穩定訓練
-        gradient_accumulation_steps=4,   # 增加累積步數維持有效batch size=32
+        per_device_train_batch_size=16,  # 增加batch size穩定訓練
+        gradient_accumulation_steps=2,   # 降低累積步數，有效batch size=32
         per_device_eval_batch_size=16,
-        learning_rate=5e-4,              # 凍結層數多時可用較高學習率
-        num_train_epochs=8,              # 凍結層時可訓練更多epochs
-        weight_decay=0.01,               # 降低權重衰減，凍結層本身已防過擬合
+        learning_rate=1e-5,              # 大幅降低學習率穩定訓練
+        num_train_epochs=12,             # 低學習率需更多epochs
+        weight_decay=0.05,               # 增加權重衰減防震盪
         logging_dir=logging_dir,
         logging_steps=50,
         save_total_limit=1,
         report_to="tensorboard",
         save_steps=1000,
-        eval_steps=50,
+        eval_steps=100,                  # 降低評估頻率減少噪音
         no_cuda=False,
         fp16=True,
-        warmup_ratio=0.1,                # 降低warmup比例
+        warmup_ratio=0.2,                # 增加warmup穩定初期訓練
         metric_for_best_model="eval_f1",
         greater_is_better=True,
         load_best_model_at_end=True,
