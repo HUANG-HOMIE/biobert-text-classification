@@ -1,13 +1,19 @@
-# BioBERT Large Model Training and Ensemble Testing
+# BioBERT Model Training and Ensemble Testing
 
 ## Overview
-This project implements a BioBERT based text classification system for biomedical literature classification (T0 vs T2/4). The system uses 5-fold cross-validation for robust training and ensemble voting for final predictions.
+This project implements a BioBERT text classification system for biomedical literature classification (T0 vs T2/4). The system uses 5-fold cross-validation with layer freezing strategy for robust training and ensemble voting for final predictions.
+
+## Best Model Configuration
+Based on extensive experiments, the optimal configuration achieved **F1 Score: 0.8671** with:
+- **Model**: BioBERT-Base (`dmis-lab/biobert-base-cased-v1.1`)
+- **Strategy**: Freeze first 8 layers, train last 4 layers + classifier
+- **Best Individual Model**: Fold 4 (F1: 0.8502)
 
 ## Quick Start
 
 ### 1. Training Models (5-Fold Cross Validation)
 ```bash
-python train_biobert_large.py
+python train_biobert_base.py
 ```
 
 ### 2. Testing Single Best Model
@@ -61,8 +67,8 @@ flowchart TD
 ```mermaid
 flowchart LR
     A[Data Loading] --> B[Tokenization]
-    B --> C[Model Initialization<br/>BioBERT]
-    C --> D[Layer Freezing<br/>First N Layers]
+    B --> C[Model Initialization<br/>BioBERT-Base]
+    C --> D[Layer Freezing<br/>First 8 Layers]
     D --> E[Class Weight<br/>Calculation]
     E --> F[Training Loop]
     F --> G[F1-based<br/>Model Selection]
@@ -76,63 +82,32 @@ flowchart LR
 ## Model Configuration
 
 ### Core Parameters
-| Parameter | Value | Description |
-|-----------|-------|-------------|
-| **Model** | `dmis-lab/biobert-large-cased-v1.1` | Pre-trained BioBERT Large model |
-| **Task** | Binary Classification | T0 vs T2/4 classification |
-| **Max Length** | 512 tokens | Maximum sequence length |
-| **Dropout** | 0.5 | Classifier dropout rate |
+| Parameter | Value |
+|-----------|-------|
+| **Model** | `dmis-lab/biobert-base-cased-v1.1` |
+| **Task** | Binary Classification |
+| **Max Length** | 512 tokens |
+| **Dropout** | 0.3 |
+| **Hidden Size** | 768 |
+| **Layers** | 12 total |
 
-### Training Hyperparameters
-| Parameter | Value | Rationale |
-|-----------|-------|-----------|
-| **Learning Rate** | `1e-5` | Low rate for full fine-tuning |
-| **Epochs** | `5` | Prevent overfitting |
-| **Batch Size** | `16` | Memory efficiency |
-| **Gradient Accumulation** | `2` | Effective batch size = 32 |
-| **Weight Decay** | `0.1` | Strong regularization |
-| **Warmup Ratio** | `0.2` | Gradual learning rate increase |
-| **Frozen Layers** | `0` | Full model fine-tuning |
+### Optimal Training Hyperparameters (Freeze 8 Layers)
+| Parameter | Value |
+|-----------|-------|
+| **Learning Rate** | `3e-5` |
+| **Epochs** | `15` |
+| **Batch Size** | `32` |
+| **Gradient Accumulation** | `4` |
+| **Weight Decay** | `0.01` |
+| **Warmup Ratio** | `0.1` |
+| **Frozen Layers** | `8` |
 
 ### Optimization Settings
-| Setting | Value | Purpose |
-|---------|-------|---------|
-| **Optimizer** | AdamW | Default transformer optimizer |
-| **Scheduler** | Linear with warmup | Stable convergence |
-| **FP16** | Enabled | Memory and speed optimization |
-| **Class Weights** | Balanced | Handle class imbalance |
-| **Best Model Metric** | `eval_f1` | F1-score based selection |
-
-## Data Configuration
-
-### Dataset Statistics
-```
-Training Set: 2,268 articles
-Test Set: 395 articles
-Classes: T0 (majority), T2/4 (minority)
-Class Distribution: Imbalanced (~60:40)
-```
-
-### Cross-Validation Setup
-```
-Strategy: 5-Fold Cross Validation
-Random State: 50 (reproducible splits)
-Validation Size per Fold: ~450 articles
-Training Size per Fold: ~1,800 articles
-```
-
-## Ensemble Method
-
-### Soft Voting Algorithm
-```python
-# For each test sample i:
-probabilities_i = [model_1_prob_i, model_2_prob_i, ..., model_5_prob_i]
-average_prob_i = mean(probabilities_i)
-prediction_i = 1 if average_prob_i > 0.5 else 0
-```
-
-### Model Selection Criteria
-- Individual models selected based on highest F1 score
-- All 5 fold models used in ensemble regardless of individual performance
-- Soft voting chosen over hard voting for better probability utilization
+| Setting | Value |
+|---------|-------|
+| **Optimizer** | AdamW |
+| **Scheduler** | Linear with warmup |
+| **FP16** | Enabled |
+| **Class Weights** | Balanced |
+| **Best Model Metric** | `eval_f1` |
 

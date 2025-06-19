@@ -69,7 +69,7 @@ def main():
     
     # Find all fold models
     print("Finding all fold models...")
-    fold_models = glob.glob("biobert_large_5_fold_result/result1_0.8652_freeze12/results_fold*_f1_*/checkpoint-*")
+    fold_models = glob.glob("results_fold*_f1_*/checkpoint-*")
     
     if not fold_models:
         print("No fold models found! Please check the model paths.")
